@@ -1,4 +1,4 @@
-from app.widgets.pages.ipage import OutputPage
+from pages.ipage import OutputPage
 from tkinter import Label
 
 

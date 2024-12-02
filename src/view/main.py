@@ -1,11 +1,11 @@
 import tkinter as tk
 import ordis
-from app.application import App
+from application import App
 
 if __name__ == "__main__":
-    print(ordis.add(1, 3))
+    print(ordis.add(1, 2))
     main = tk.Tk()
-    main.geometry("1440x800+200+100")
+    main.geometry("1440x820+200+100")
     main.minsize(600, 400)
     app = App(main)
     main.mainloop()

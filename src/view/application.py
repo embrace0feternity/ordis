@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-from app.widgets.option_screen import OptionScreen
-from app.widgets.main_menu import MainMenu
-from app.widgets.layout_screen import LayoutScreen
-from app.widgets.pages.pages import *
+from widgets.option_screen import OptionScreen
+from widgets.main_menu import MainMenu
+from widgets.layout_screen import LayoutScreen
+from pages.pages import *
 
 
 class App:

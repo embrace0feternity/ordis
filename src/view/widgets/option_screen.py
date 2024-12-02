@@ -1,5 +1,4 @@
 import tkinter as tk
-from widgets.main_menu import MainMenu
 from widgets.layout_screen import LayoutScreen
 from pages.pages import *
 

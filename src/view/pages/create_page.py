@@ -1,7 +1,7 @@
 from tkinter import StringVar, IntVar
 
-from widgets.horizontal_table import *
-from pages.ipage import InputPage
+from view.widgets.horizontal_table import *
+from view.pages.ipage import InputPage
 
 
 def callback(sv):
@@ -31,9 +31,14 @@ class CreatePage(InputPage):
         table.addDataEntry(property="limit", bind=self.__limitTracker)
 
     # override
-    def collectData(self):
+    def __collectData__(self):
         return (self.__nameTracker.get(),
                 self.__timeTracker.get(),
                 self.__attributeTracker.get(),
                 self.__reserveTracker.get(),
                 self.__limitTracker.get())
+
+    # override
+    def trigger(self):
+        data = self.__collectData__()
+        self.pub.notify(data)

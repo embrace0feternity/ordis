@@ -1,5 +1,5 @@
-from widgets.horizontal_table import *
-from pages.ipage import OutputPage
+from view.widgets.horizontal_table import *
+from view.pages.ipage import OutputPage
 
 
 class SuperBlockPage(OutputPage):

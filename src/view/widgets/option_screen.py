@@ -1,6 +1,6 @@
 import tkinter as tk
-from widgets.layout_screen import LayoutScreen
-from pages.pages import *
+from view.widgets.layout_screen import LayoutScreen
+from view.pages.pages import *
 
 # Top-left application widget
 
@@ -23,7 +23,7 @@ class OptionScreen(tk.Frame):
 
         def runCommand(obj):
             stTop = obj.visible()
-            print(stTop.collectData())
+            stTop.trigger()
 
         self.__runButton = tk.Button(buttonFrame,
                                      text="run",
@@ -34,3 +34,7 @@ class OptionScreen(tk.Frame):
                                            text="terminate",
                                            command=lambda: print("terminate"))
         self.__terminateButton.grid(row=0, column=1, sticky="news")
+
+    def register(self, pubdump):
+        for fr in self.stackFrame.frames:
+            pubdump.register(self.stackFrame.frames[fr].publisher())

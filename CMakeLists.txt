@@ -7,8 +7,13 @@ set(BIND_TARGET_NAME ordis)
 
 find_package(Python COMPONENTS Interpreter Development)
 find_package(pybind11 CONFIG)
+find_package(elib_enyo CONFIG)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp/CMakeLists.txt)
+set(ENABLE_TESTS ON CACHE BOOL "enable/disable tests")
+if (${ENABLE_TESTS})
+    enable_testing()
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp)
+endif()
 
 if (NOT DEFINED pybind11_FOUND) 
     message(FATAL_ERROR "Pybind hasn't been found!")
@@ -23,3 +28,5 @@ pybind11_add_module(${BIND_TARGET_NAME} ${ORDIS_SRC})
 set(pybind11_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_compile_definitions(${BIND_TARGET_NAME}
                            PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+
+

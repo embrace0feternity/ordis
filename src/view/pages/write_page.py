@@ -1,7 +1,7 @@
 from tkinter import StringVar
 
-from widgets.horizontal_table import *
-from pages.ipage import InputPage
+from view.widgets.horizontal_table import *
+from view.pages.ipage import InputPage
 
 
 def callback(sv):

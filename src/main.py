@@ -1,16 +1,22 @@
 import tkinter as tk
 import ordis
-from application import App
+from view.application import App
+from misc.observer import PublisherDump
+from misc.natah import Natah
+
 
 if __name__ == "__main__":
-    print(ordis.add(1, 2))
+    natah = Natah()
+    pubDump = PublisherDump()
     main = tk.Tk()
     main.geometry("1440x820+200+100")
     main.minsize(600, 400)
-    app = App(main)
+    app = App(main, pubDump)
+    l = pubDump.list()
+    l[0].subscribe(natah.create)
     main.mainloop()
-
 # class Tracker:
+
 #     """ Toplevel windows resize event tracker. """
 
 #     def __init__(self, toplevel):
@@ -24,7 +30,7 @@ if __name__ == "__main__":
 #     def unbind_config(self):  # Untested.
 #         if self._func_id:
 #             self.toplevel.unbind("<Configure>", self._func_id)
-#             self._func_id = None
+#             self._func_id = Noner
 
 #     def resize(self, event):
 #         if (event.widget == self.toplevel and

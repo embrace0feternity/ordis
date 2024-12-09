@@ -1,13 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-from widgets.option_screen import OptionScreen
-from widgets.main_menu import MainMenu
-from widgets.layout_screen import LayoutScreen
-from pages.pages import *
+from view.widgets.option_screen import OptionScreen
+from view.widgets.main_menu import MainMenu
+from view.widgets.layout_screen import LayoutScreen
+from view.pages.pages import *
 
 
 class App:
-    def __init__(self, parent):
+    def __init__(self, parent, pubdump):
 
         # left frame
         leftFrame = tk.Frame(parent)
@@ -15,6 +15,7 @@ class App:
         optionScreenPageStack = (
             CrPage.CreatePage, WrPage.WritePage, RdPage.ReadPage, InPage.InitPage)
         self.__optionScreen = OptionScreen(leftFrame, optionScreenPageStack)
+        self.__optionScreen.register(pubdump)
         self.__optionScreen.pack(side="top")
 
         self.__fsStructure = tk.Frame(leftFrame, background="red")

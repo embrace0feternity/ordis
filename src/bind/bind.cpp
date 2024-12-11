@@ -4,5 +4,7 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(ordis, m) {
-  py::class_<Runner<t6137>>(m, "Runner").def(py::init<>());
+  py::class_<Runner<t6137>>(m, "Runner")
+        .def(py::init<>())
+        .def("create", &Runner<t6137>::create);
 }

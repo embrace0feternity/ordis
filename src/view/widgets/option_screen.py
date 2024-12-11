@@ -1,6 +1,7 @@
 import tkinter as tk
 from view.widgets.layout_screen import LayoutScreen
 from view.pages.pages import *
+from misc.natah import natah
 
 # Top-left application widget
 
@@ -23,7 +24,7 @@ class OptionScreen(tk.Frame):
 
         def runCommand(obj):
             stTop = obj.visible()
-            stTop.trigger()
+            natah.emit("create", stTop.collectData())
 
         self.__runButton = tk.Button(buttonFrame,
                                      text="run",
@@ -35,6 +36,3 @@ class OptionScreen(tk.Frame):
                                            command=lambda: print("terminate"))
         self.__terminateButton.grid(row=0, column=1, sticky="news")
 
-    def register(self, pubdump):
-        for fr in self.stackFrame.frames:
-            pubdump.register(self.stackFrame.frames[fr].publisher())

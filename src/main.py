@@ -1,20 +1,19 @@
 import tkinter as tk
-import ordis
 from view.application import App
-from misc.observer import PublisherDump
-from misc.natah import Natah
+from misc.natah import natah
+from misc.interpreter import Interpreter
 
 
 if __name__ == "__main__":
-    natah = Natah()
-    pubDump = PublisherDump()
+    interpreter = Interpreter()
+    natah.setConnection("create", interpreter.create)
     main = tk.Tk()
     main.geometry("1440x820+200+100")
     main.minsize(600, 400)
-    app = App(main, pubDump)
-    l = pubDump.list()
-    l[0].subscribe(natah.create)
+    app = App(main)
     main.mainloop()
+
+
 # class Tracker:
 
 #     """ Toplevel windows resize event tracker. """

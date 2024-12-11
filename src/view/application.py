@@ -7,7 +7,7 @@ from view.pages.pages import *
 
 
 class App:
-    def __init__(self, parent, pubdump):
+    def __init__(self, parent):
 
         # left frame
         leftFrame = tk.Frame(parent)
@@ -15,7 +15,6 @@ class App:
         optionScreenPageStack = (
             CrPage.CreatePage, WrPage.WritePage, RdPage.ReadPage, InPage.InitPage)
         self.__optionScreen = OptionScreen(leftFrame, optionScreenPageStack)
-        self.__optionScreen.register(pubdump)
         self.__optionScreen.pack(side="top")
 
         self.__fsStructure = tk.Frame(leftFrame, background="red")

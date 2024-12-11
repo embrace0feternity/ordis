@@ -1,18 +1,37 @@
-import ordis
-from misc.observer import Subscriber
-
 
 class Natah:
-    class Natah_create(Subscriber):
-        def __init__(self, sub):
-            self.__onUpd = sub
-
-        def update(self, data):
-            self.__onUpd(data)
-
     def __init__(self):
-        self.__ordis = ordis.Runner()
-        self.create = self.Natah_create(self.__create)
+        self.__connections = {}
 
-    def __create(self, data):
-        print("file name", data[0])
+    def setConnection(self, name, handler = None):
+        signal = self.Signal(handler)
+        self.__connections[name] = signal
+
+    def updateConnection(self, name, handler):
+        if name in self.__connections:
+            self.__connections[name].update(handler)
+
+    def removeConnection(self, name):
+        if name in self.__connections:
+            signal = self.__connections[name]
+            self.__connections.remove(name)
+    
+    def emit(self, name, args):
+        if name in self.__connections:
+            self.__connections[name].emit(args)
+
+    class Signal:
+        def __init__(self, handler = None):
+            self.update(handler)
+
+        def update(self, handler):
+            self.__handler = handler
+
+        def emit(self, args):
+            if (self.__handler != None):
+                self.__handler(args)
+            else:
+                print("NO HANDLER")
+
+
+natah = Natah()

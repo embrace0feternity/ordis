@@ -31,14 +31,9 @@ class CreatePage(InputPage):
         table.addDataEntry(property="limit", bind=self.__limitTracker)
 
     # override
-    def __collectData__(self):
+    def collectData(self):
         return (self.__nameTracker.get(),
                 self.__timeTracker.get(),
                 self.__attributeTracker.get(),
                 self.__reserveTracker.get(),
                 self.__limitTracker.get())
-
-    # override
-    def trigger(self):
-        data = self.__collectData__()
-        self.pub.notify(data)

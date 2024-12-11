@@ -9,8 +9,13 @@ find_package(Python COMPONENTS Interpreter Development)
 find_package(pybind11 CONFIG)
 find_package(elib_enyo CONFIG)
 
-set(ENABLE_TESTS ON CACHE BOOL "enable/disable tests")
-if (${ENABLE_TESTS})
+if (NOT DEFINED elib_enyo_FOUND) 
+    message(STATUS "ENYO hasn't been found!")
+endif()
+
+# set(ORDIS_TESTS ON CACHE BOOL "enable/disable tests")
+set(ORDIS_TESTS ON)
+if (${ORDIS_TESTS})
     enable_testing()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp)
 endif()
@@ -28,5 +33,3 @@ pybind11_add_module(${BIND_TARGET_NAME} ${ORDIS_SRC})
 set(pybind11_DIR ${CMAKE_CURRENT_BINARY_DIR})
 target_compile_definitions(${BIND_TARGET_NAME}
                            PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-
-

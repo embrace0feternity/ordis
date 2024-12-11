@@ -3,6 +3,7 @@
 // #include <enyo/enyo.hpp>
 #include "../mock/config_parameters.hpp"
 #include <iostream>
+#include <cstdint>
 
 struct t6137 {
   constexpr static std::uint16_t chip = 8;
@@ -30,11 +31,20 @@ public:
 
 template <typename InitType> class Runner {
   VirtualMemoryMock vm;
-  EnyoDriverMock driver;
+  EnyoDriverMock driver;  
   EnyoMock<InitType> enyo;
 
 public:
-  Runner() : enyo{vm, driver} { enyo.show(); }
+    Runner() : enyo{vm, driver} { enyo.show(); }
+
+    void create(std::string name, 
+                std::uint16_t reserve, 
+                std::uint16_t limit, 
+                std::uint64_t time, 
+                std::uint16_t attribute) 
+    {
+        
+    }
 };
 
 #endif

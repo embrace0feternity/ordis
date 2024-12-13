@@ -1,0 +1,43 @@
+{
+    "version": 3,
+    "vendor": {
+        "conan": {}
+    },
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 15,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "conan-release",
+            "displayName": "'conan-release' config",
+            "description": "'conan-release' configure using 'Unix Makefiles' generator",
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_POLICY_DEFAULT_CMP0091": "NEW",
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment": {
+                "EXAMPLE_VERSION_INFO": "1.0",
+                "PYTHON_EXECUTABLE": "{PROJECT}/ordis/.venv_ordis/bin/python3",
+                "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${PROJECT}/ordis/build/lib.linux-x86_64-cpython-312/"
+            },
+            "toolchainFile": "generators/conan_toolchain.cmake",
+            "binaryDir": "${PROJECT}/ordis/build/Release"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "conan-release",
+            "configurePreset": "conan-release",
+            "jobs": 8
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "conan-release",
+            "configurePreset": "conan-release"
+        }
+    ]
+}

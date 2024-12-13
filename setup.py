@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 import sys
+import json
 from pathlib import Path
 
 from setuptools import Extension, setup
@@ -26,6 +27,18 @@ class CMakeExtension(Extension):
 
 
 class CMakeBuild(build_ext):
+    def __findPreset__(self, name, path):
+        result = []
+        for root, dirs, files in os.walk(path):
+            if name in files:
+                result.append(os.path.join(root, name))
+        return result
+
+    def __updatePreset__(self):
+        name = "CMakePresets.json"
+        preset = self.__findPreset__(name, Path.cwd())[0]
+        print("preset _______", preset)
+
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
         ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
@@ -107,29 +120,20 @@ class CMakeBuild(build_ext):
                 cmake_args += [
                     "-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
 
-        # Set CMAKE_BUILD_PARALLEL_LEVEL to control the parallel build level
-        # across all generators.
-        if "CMAKE_BUILD_PARALLEL_LEVEL" not in os.environ:
-            # self.parallel is a Python 3 only way to set parallel jobs by hand
-            # using -j in the build_ext call, not supported by pip or PyPA-build.
-            if hasattr(self, "parallel") and self.parallel:
-                # CMake 3.12+ only.
-                build_args += [f"-j{self.parallel}"]
-
-        build_temp = Path(self.build_temp) / ext.name
-        if not build_temp.exists():
-            build_temp.mkdir(parents=True)
+        # Json update preset
+        result = self.__updatePreset__()
 
         subprocess.run(
-            # ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
             ["cmake", "--preset", "conan-release"], cwd=Path.cwd(), check=True
         )
 
         build_dir = f"{Path.cwd()}/build/{cfg}/"
-        print("build dir ------", build_dir)
+
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_dir, check=True
         )
+
+        subprocess.run()
 
 
 MODULE_NAME = "ordis"

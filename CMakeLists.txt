@@ -3,33 +3,47 @@ project(ordisapp LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(BIND_TARGET_NAME ordis)
+set(ORDIS_LIB ordis_lib)
 
 find_package(Python COMPONENTS Interpreter Development)
 find_package(pybind11 CONFIG)
 find_package(elib_enyo CONFIG)
 
-if (NOT DEFINED elib_enyo_FOUND) 
-    message(STATUS "ENYO hasn't been found!")
-endif()
+####################################################
+
+# if (NOT DEFINED pybind11_FOUND) 
+#     message(FATAL_ERROR "Pybind hasn't been found!")
+# endif()
+
+# file(GLOB ORDIS_LIB_SRC
+#     "src/bind/mock/*.cpp"
+#     "src/bind/mock/*.hpp"
+# )
+
+# add_library(${ORDIS_LIB} ${ORDIS_LIB_SRC})
+# target_link_libraries(${ORDIS_LIB} PUBLIC elib_enyo::elib_enyo)
+
+####################################################
+set(BIND_TARGET ordis)
+
+pybind11_add_module(${BIND_TARGET} 
+# ${ORDIS_LIB_SRC}
+    src/bind/bind.cpp)
+
+set(pybind11_DIR ${CMAKE_CURRENT_BINARY_DIR})
+target_compile_definitions(${BIND_TARGET}
+                           PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+target_link_libraries(${BIND_TARGET} PUBLIC elib_enyo::elib_enyo)
+
+# if (NOT DEFINED elib_enyo_FOUND) 
+#     message(STATUS "ENYO hasn't been found!
+#     \   Create mock enyo library")
+# endif()
+
 
 # set(ORDIS_TESTS ON CACHE BOOL "enable/disable tests")
-set(ORDIS_TESTS ON)
-if (${ORDIS_TESTS})
-    enable_testing()
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp)
-endif()
-
-if (NOT DEFINED pybind11_FOUND) 
-    message(FATAL_ERROR "Pybind hasn't been found!")
-endif()
-
-file(GLOB ORDIS_SRC
-     "src/bind/*.h"
-     "src/bind/*.cpp"
-)
-
-pybind11_add_module(${BIND_TARGET_NAME} ${ORDIS_SRC})
-set(pybind11_DIR ${CMAKE_CURRENT_BINARY_DIR})
-target_compile_definitions(${BIND_TARGET_NAME}
-                           PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+# set(ORDIS_TESTS OFF)
+# if (${ORDIS_TESTS})
+#     enable_testing()
+#     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
+# endif()

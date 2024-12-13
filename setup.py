@@ -79,7 +79,6 @@ class CMakeBuild(build_ext):
                     ]
                 except ImportError:
                     pass
-
         else:
             # Single config generators are handled "normally"
             single_config = any(
@@ -122,23 +121,30 @@ class CMakeBuild(build_ext):
             build_temp.mkdir(parents=True)
 
         subprocess.run(
-            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
-        )
-        subprocess.run(
-            ["cmake", "--build", ".", *build_args], cwd=build_temp, check=True
+            # ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
+            ["cmake", "--preset", "conan-release"], cwd=Path.cwd(), check=True
         )
 
+        build_dir = f"{Path.cwd()}/build/{cfg}/"
+        print("build dir ------", build_dir)
+        subprocess.run(
+            ["cmake", "--build", ".", *build_args], cwd=build_dir, check=True
+        )
+
+
+MODULE_NAME = "ordis"
+MODULE_VERSION = "1.0"
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name="ordis",
-    version="1.0",
+    name=MODULE_NAME,
+    version=MODULE_VERSION,
     author="Embrace0feternity",
     author_email="embrace0feternity@gmail.com",
     description="Enyo gui application \'Ordis\'",
     long_description="",
-    ext_modules=[CMakeExtension("ordis")],
+    ext_modules=[CMakeExtension(MODULE_NAME)],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     extras_require={"test": ["pytest>=6.0"]},

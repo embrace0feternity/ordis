@@ -1,5 +1,5 @@
-#ifndef __ORDIS_HPP__
-#define __ORDIS_HPP__
+#ifndef __RUNNER_HPP__
+#define __RUNNER_HPP__
 
 #include "config_parameters.hpp"
 // #include "interfaces.hpp"

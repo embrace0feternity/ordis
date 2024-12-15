@@ -27,17 +27,34 @@ class CMakeExtension(Extension):
 
 
 class CMakeBuild(build_ext):
-    def __findPreset__(self, name, path):
-        result = []
-        for root, dirs, files in os.walk(path):
-            if name in files:
-                result.append(os.path.join(root, name))
-        return result
+    class JsonPreset:
 
-    def __updatePreset__(self):
-        name = "CMakePresets.json"
-        preset = self.__findPreset__(name, Path.cwd())[0]
-        print("preset _______", preset)
+        def find(self, presetFileName: str, path):
+            result = []
+            for root, dirs, files in os.walk(path):
+                if presetFileName in files:
+                    result.append(os.path.join(root, presetFileName))
+
+            p = Path(result[0])
+            return p
+
+        def uploadPreset(self, path: Path):
+            return json.loads(path.read_text(encoding='utf-8'))
+
+        def updatePreset(self, presetFileName: str, presetData):
+            with open(presetFileName, 'w') as fp:
+                json.dump(presetData, fp, indent=4)
+
+        def parse(self, cmakeArgs: list):
+            obj = {}
+            for arg in cmakeArgs:
+                pos = arg.find('=')
+                key = arg[:pos]
+                if (arg[0] == '-' and arg[1] == 'D'):
+                    key = arg[2:pos]
+                value = arg[pos+1:]
+                obj[key] = value
+            return obj
 
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
@@ -120,8 +137,25 @@ class CMakeBuild(build_ext):
                 cmake_args += [
                     "-DCMAKE_OSX_ARCHITECTURES={}".format(";".join(archs))]
 
+        build_temp = Path(self.build_temp) / ext.name
+        if not build_temp.exists():
+            build_temp.mkdir(parents=True)
+
         # Json update preset
-        result = self.__updatePreset__()
+        preset = self.JsonPreset()
+        name = "CMakePresets.json"
+        path = f"{Path.cwd()}/build"
+        presetPath = preset.find(name, path)
+        presetData = preset.uploadPreset(presetPath)
+        configurePreset = presetData["configurePresets"][0]
+        envData = preset.parse(cmake_args)
+        if not "enviroment" in configurePreset:
+            envObj = {}
+            envObj["environment"] = envData
+            configurePreset.update(envObj)
+        else:
+            configurePreset["environment"].update(envData)
+        preset.updatePreset(presetPath, presetData)
 
         subprocess.run(
             ["cmake", "--preset", "conan-release"], cwd=Path.cwd(), check=True
@@ -132,8 +166,6 @@ class CMakeBuild(build_ext):
         subprocess.run(
             ["cmake", "--build", ".", *build_args], cwd=build_dir, check=True
         )
-
-        subprocess.run()
 
 
 MODULE_NAME = "ordis"

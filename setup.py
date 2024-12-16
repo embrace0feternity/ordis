@@ -27,35 +27,6 @@ class CMakeExtension(Extension):
 
 
 class CMakeBuild(build_ext):
-    class JsonPreset:
-
-        def find(self, presetFileName: str, path):
-            result = []
-            for root, dirs, files in os.walk(path):
-                if presetFileName in files:
-                    result.append(os.path.join(root, presetFileName))
-
-            p = Path(result[0])
-            return p
-
-        def uploadPreset(self, path: Path):
-            return json.loads(path.read_text(encoding='utf-8'))
-
-        def updatePreset(self, presetFileName: str, presetData):
-            with open(presetFileName, 'w') as fp:
-                json.dump(presetData, fp, indent=4)
-
-        def parse(self, cmakeArgs: list):
-            obj = {}
-            for arg in cmakeArgs:
-                pos = arg.find('=')
-                key = arg[:pos]
-                if (arg[0] == '-' and arg[1] == 'D'):
-                    key = arg[2:pos]
-                value = arg[pos+1:]
-                obj[key] = value
-            return obj
-
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
         ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
@@ -77,9 +48,12 @@ class CMakeBuild(build_ext):
         # from Python.
         cmake_args = [
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",
+            f"-DCMAKE_TOOLCHAIN_FILE={Path.cwd()
+                                      }/build/Release/generators/conan_toolchain.cmake",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",  # not used on MSVC, but no harm
         ]
+
         build_args = []
         # Adding CMake arguments set as environment variable
         # (needed e.g. to build for ARM OSx on conda-forge)
@@ -141,30 +115,11 @@ class CMakeBuild(build_ext):
         if not build_temp.exists():
             build_temp.mkdir(parents=True)
 
-        # Json update preset
-        preset = self.JsonPreset()
-        name = "CMakePresets.json"
-        path = f"{Path.cwd()}/build"
-        presetPath = preset.find(name, path)
-        presetData = preset.uploadPreset(presetPath)
-        configurePreset = presetData["configurePresets"][0]
-        envData = preset.parse(cmake_args)
-        if not "enviroment" in configurePreset:
-            envObj = {}
-            envObj["environment"] = envData
-            configurePreset.update(envObj)
-        else:
-            configurePreset["environment"].update(envData)
-        preset.updatePreset(presetPath, presetData)
-
         subprocess.run(
-            ["cmake", "--preset", "conan-release"], cwd=Path.cwd(), check=True
+            ["cmake", ext.sourcedir, *cmake_args], cwd=build_temp, check=True
         )
-
-        build_dir = f"{Path.cwd()}/build/{cfg}/"
-
         subprocess.run(
-            ["cmake", "--build", ".", *build_args], cwd=build_dir, check=True
+            ["cmake", "--build", ".", *build_args], cwd=build_temp, check=True
         )
 
 
